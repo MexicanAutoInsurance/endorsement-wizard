@@ -1,10 +1,12 @@
 /**
- * Staff API gate.
+ * Staff API gate — fail closed.
  *
- * Client magic-link routes authenticate by unguessable `client_token` only.
- * When `STAFF_ACCESS_CODE` is set, staff routes require matching `x-staff-access`.
- * When unset (local PGlite or published before the secret is added), staff routes
- * are open so the office can keep working — bind STAFF_ACCESS_CODE for lock-down.
+ * Client magic-link routes authenticate by unguessable `client_token` only
+ * and do not use this helper.
+ *
+ * Staff list/create/update/delete/invite routes require `x-staff-access`
+ * matching `STAFF_ACCESS_CODE`. If that secret is unset or blank, every
+ * staff route is denied (no fail-open on a public app).
  */
 
 export function staffUnauthorized(message?: string): Response {
@@ -21,12 +23,16 @@ export function staffUnauthorized(message?: string): Response {
 
 export function requireStaffAccess(request: Request): true | Response {
   const expected = process.env.STAFF_ACCESS_CODE?.trim() ?? "";
+  if (expected === "") {
+    return staffUnauthorized(
+      "STAFF_ACCESS_CODE is not configured. Add that secret in Cursor, then unlock with the same code.",
+    );
+  }
+
   const provided =
     request.headers.get("x-staff-access")?.trim() ||
     request.headers.get("X-Staff-Access")?.trim() ||
     "";
-
-  if (expected === "") return true;
 
   if (provided !== "" && provided === expected) return true;
   return staffUnauthorized();

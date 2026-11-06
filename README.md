@@ -10,16 +10,16 @@ https://endorsement-wizard.apps.grok.bot
 
 ```bash
 npm install
-env -u DATABASE_URL npm run dev
+STAFF_ACCESS_CODE=local-dev env -u DATABASE_URL npm run dev
 ```
 
-Open http://127.0.0.1:3000 (staff) — client links at `/client/:token`.
+Open http://127.0.0.1:3000 (staff) — unlock with `local-dev`. Client links at `/client/:token`.
 
 Local runs use in-memory PGlite (migrations applied on first query). Published apps use Postgres via `DATABASE_URL`.
 
 ## Staff access
 
-Published staff APIs require the `STAFF_ACCESS_CODE` app secret. Enter the same value on the staff unlock screen. Client magic links do **not** need Cursor login or the staff code.
+Staff APIs **fail closed**: if `STAFF_ACCESS_CODE` is unset, all staff routes deny access. Set that secret in Cursor (or locally in the env), then enter the same value on the unlock screen. Client magic links do **not** need Cursor login or the staff code.
 
 ## Phase 2 flow
 

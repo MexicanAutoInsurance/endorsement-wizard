@@ -49,13 +49,14 @@ function Unlock({ onUnlocked }: { onUnlocked: () => void }) {
     setBusy(true);
     setError(null);
     try {
-      const ok = await apiUnlockStaff(code);
-      if (!ok) {
-        setError("That access code didn’t match. Try again.");
-        setBusy(false);
+      if (!info?.configured) {
+        setError(
+          "Staff access is locked until STAFF_ACCESS_CODE is set in Cursor Secrets. Client magic links do not need this code.",
+        );
         return;
       }
-      if (code) setStaffAccessCode(code);
+      await apiUnlockStaff(code);
+      setStaffAccessCode(code);
       onUnlocked();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not unlock");
@@ -79,40 +80,49 @@ function Unlock({ onUnlocked }: { onUnlocked: () => void }) {
           {info?.configured ? (
             <p className="step-help">
               Enter the staff access code (same value as the{" "}
-              <strong>STAFF_ACCESS_CODE</strong> app secret).
+              <strong>STAFF_ACCESS_CODE</strong> app secret). Client fill-out links never need
+              this code.
             </p>
           ) : (
             <p className="step-help">
+              Staff screens are locked until <strong>STAFF_ACCESS_CODE</strong> is added in
+              Cursor Secrets
               {info?.local
-                ? "Local preview — continue without a code."
-                : "No staff access code configured yet — continue, then add STAFF_ACCESS_CODE in Secrets to lock staff screens. Client magic links never need this code."}
+                ? " (local: STAFF_ACCESS_CODE=your-code npm run dev)"
+                : ""}
+              . Client magic links stay public and do not use this code.
             </p>
           )}
-          {info?.configured ? (
-            <div className="field-grid" style={{ maxWidth: 360 }}>
-              <label className="field">
-                <span className="field-label">Access code</span>
-                <input
-                  type="password"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") void submit();
-                  }}
-                />
-              </label>
-            </div>
-          ) : null}
+          <div className="field-grid" style={{ maxWidth: 360 }}>
+            <label className="field">
+              <span className="field-label-text">Access code</span>
+              <input
+                type="password"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                autoFocus
+                autoComplete="current-password"
+                disabled={!info?.configured}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") void submit();
+                }}
+              />
+            </label>
+          </div>
           {error ? <p className="gate-item bad">{error}</p> : null}
+          {!info?.configured ? (
+            <p className="gate-item bad" style={{ marginTop: "0.75rem" }}>
+              Cannot unlock yet — set STAFF_ACCESS_CODE in Secrets, then refresh this page.
+            </p>
+          ) : null}
           <div className="actions" style={{ marginTop: "1rem" }}>
             <button
               type="button"
               className="btn btn-primary"
-              disabled={busy || (Boolean(info?.configured) && !code)}
+              disabled={busy || !info?.configured || !code}
               onClick={() => void submit()}
             >
-              {info?.configured ? "Unlock" : "Continue to staff wizard"}
+              Unlock staff wizard
             </button>
           </div>
         </div>
@@ -340,17 +350,17 @@ export default function StaffApp() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (getStaffAccessCode()) {
-      setUnlocked(true);
-      return;
-    }
+    // Never auto-unlock without a configured secret + stored code (fail closed)
+    const existing = getStaffAccessCode();
+    if (!existing) return;
     fetch("/api/staff/unlock")
       .then((r) => r.json())
-      .then((d: { local?: boolean; configured?: boolean }) => {
-        // Auto-enter when no staff code is required
-        if (d.local || !d.configured) setUnlocked(true);
+      .then((d: { configured?: boolean }) => {
+        if (d.configured) setUnlocked(true);
       })
-      .catch(() => setUnlocked(true));
+      .catch(() => {
+        /* stay locked */
+      });
   }, []);
 
   const refresh = async () => {
