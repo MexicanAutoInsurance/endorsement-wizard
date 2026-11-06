@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140" fill="none">
+  <path d="M28 86h70l8-22h28v22h18" stroke="#1a2b3c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="48" cy="96" r="9" stroke="#1a2b3c" stroke-width="2.5"/>
+  <circle cx="100" cy="96" r="9" stroke="#1a2b3c" stroke-width="2.5"/>
+  <circle cx="48" cy="96" r="3" fill="#c8102e"/>
+  <circle cx="100" cy="96" r="3" fill="#c8102e"/>
+  <path d="M124 86h16" stroke="#1a2b3c" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M140 92h130" stroke="#1a2b3c" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="172" cy="104" r="8" stroke="#1a2b3c" stroke-width="2.5"/>
+  <circle cx="240" cy="104" r="8" stroke="#1a2b3c" stroke-width="2.5"/>
+  <path d="M154 88c30-28 86-32 116-6l-8 10H162z" stroke="#1a2b3c" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- dinghy -->
+  <ellipse cx="210" cy="66" rx="22" ry="9" stroke="#c8102e" stroke-width="2.5"/>
+  <text x="196" y="70" fill="#c8102e" font-size="9" font-family="system-ui,sans-serif" font-weight="600">dinghy</text>
+  <text x="148" y="38" fill="#5c4a45" font-size="11" font-family="system-ui,sans-serif">Dinghy = its own listed unit</text>
+</svg>
