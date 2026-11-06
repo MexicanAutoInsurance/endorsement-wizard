@@ -1,33 +1,29 @@
-# Mexican Auto Insurance — Endorsement Wizard (Phase 1 MVP)
+# Endorsement Wizard (Phase 2)
 
-Staff-assisted multi-change endorsement intake for **Lewis and Lewis / MexicanAutoInsurance.com**.
+Staff-assisted Mexican Auto Insurance endorsement intake with **client magic-link fill-out**.
+
+## Live
+
+https://endorsement-wizard.apps.grok.bot
 
 ## Run locally
 
 ```bash
-cd endorsement-wizard
 npm install
-npm run dev
+env -u DATABASE_URL npm run dev
 ```
 
-Open the URL Vite prints (usually `http://127.0.0.1:5173`).
+Open http://127.0.0.1:3000 (staff) — client links at `/client/:token`.
 
-## What it does
+Local runs use in-memory PGlite (migrations applied on first query). Published apps use Postgres via `DATABASE_URL`.
 
-1. Identify policy (CRT #, name, phone, email, optional FoxPro before notes)
-2. Stack change types (vehicle / towed / term) under one **$40** fee context
-3. Forced towed Yes/No every session
-4. Completeness gate before summary
-5. Combined before → after summary
-6. Confirmation email (mailto + copy)
-7. FoxPro paste export block
-8. Staff attestation + session status toggles
+## Staff access
 
-Sessions persist in browser `localStorage`. No FoxPro API, payment, or client magic-link (Phase 2+).
+Published staff APIs require the `STAFF_ACCESS_CODE` app secret. Enter the same value on the staff unlock screen. Client magic links do **not** need Cursor login or the staff code.
 
-## Build
+## Phase 2 flow
 
-```bash
-npm run build
-npm run preview
-```
+1. Staff: CRT #, insured name, email (phone optional); optional change types.
+2. **Send client fill-out link** → mailto / copy email with `/client/:token`.
+3. Client: towed Yes/No + helper, change details, fee + missed-info acknowledgments (no waive).
+4. Staff: review submitted answers, edit, before→after summary, confirmation email, FoxPro export.
