@@ -949,3 +949,185 @@ a {
     align-items: stretch;
   }
 }
+
+/* Staff printable Renewal–Endorsement order form */
+.order-form-shell {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.order-form-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.order-form-page {
+  background: #fff;
+  color: #111;
+  border: 1px solid #222;
+  padding: 1.35rem 1.5rem 1.1rem;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12.5pt;
+  line-height: 1.35;
+}
+
+.order-form-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.order-form-header h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.order-agency {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.order-meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.order-field-row {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0.55rem 0;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.2rem;
+}
+
+.order-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.order-value {
+  min-height: 1.15rem;
+  font-size: 0.98rem;
+}
+
+.order-value.blank {
+  min-height: 1.35rem;
+}
+
+.order-checks {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.85rem 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.order-checks label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.order-check {
+  width: 1.1rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.order-check.on {
+  color: #000;
+}
+
+.order-notes {
+  margin: 0.85rem 0 1rem;
+  min-height: 12rem;
+  border: 1px solid #444;
+  padding: 0.55rem 0.65rem;
+}
+
+.order-notes-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+.order-note-line {
+  margin: 0 0 0.35rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px dotted #999;
+  font-size: 0.92rem;
+  white-space: pre-wrap;
+}
+
+.order-payment {
+  margin-top: 0.75rem;
+}
+
+.order-pay-hint {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #444;
+}
+
+.order-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem 1rem;
+  margin-top: 0.55rem;
+}
+
+@media (min-width: 640px) {
+  .order-admin-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.order-form-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  font-size: 0.72rem;
+  color: #444;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .no-print,
+  .toast,
+  .brand-bar,
+  .panel .stepper,
+  .actions-sticky {
+    display: none !important;
+  }
+
+  .order-form-shell {
+    max-width: none;
+    padding: 0;
+  }
+
+  .order-form-page {
+    border: 0;
+    padding: 0;
+  }
+
+  .order-form-toolbar {
+    display: none !important;
+  }
+}

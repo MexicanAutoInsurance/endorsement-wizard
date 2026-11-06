@@ -27,6 +27,7 @@ import {
   StepSummary,
   StepFinish,
 } from "@/components/WizardSteps";
+import { EndorsementOrderForm } from "@/components/EndorsementOrderForm";
 
 const ACTIVE_KEY = "mai-endorsement-active-v3";
 
@@ -340,6 +341,7 @@ export default function StaffApp() {
   const [sessions, setSessions] = useState<EndorsementSession[]>([]);
   const [session, setSession] = useState<EndorsementSession | null>(null);
   const [step, setStep] = useState<StepId>("policy");
+  const [showOrderForm, setShowOrderForm] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -416,6 +418,7 @@ export default function StaffApp() {
   const goBack = () => {
     if (stepIndex === 0) {
       setSession(null);
+      setShowOrderForm(false);
       localStorage.removeItem(ACTIVE_KEY);
       return;
     }
@@ -448,9 +451,14 @@ export default function StaffApp() {
               if (!found) return;
               localStorage.setItem(ACTIVE_KEY, id);
               setSession(found);
-              setStep(
-                found.status === "client_submitted" ? "details" : "policy",
-              );
+              // After client submits, land on printable order form first
+              if (found.status === "client_submitted") {
+                setShowOrderForm(true);
+                setStep("summary");
+              } else {
+                setShowOrderForm(false);
+                setStep("policy");
+              }
             })();
           }}
           onDelete={(id) => {
@@ -460,6 +468,18 @@ export default function StaffApp() {
             })();
           }}
           onRefresh={() => void refresh()}
+        />
+        {toast ? <div className="toast">{toast}</div> : null}
+      </>
+    );
+  }
+
+  if (showOrderForm) {
+    return (
+      <>
+        <EndorsementOrderForm
+          session={session}
+          onClose={() => setShowOrderForm(false)}
         />
         {toast ? <div className="toast">{toast}</div> : null}
       </>
@@ -477,7 +497,16 @@ export default function StaffApp() {
             {session.policy.crtNumber ? ` · ${session.policy.crtNumber}` : ""}
           </p>
         </div>
-        <div className="status-pill">{STATUS_LABELS[session.status]}</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setShowOrderForm(true)}
+          >
+            Print order form
+          </button>
+          <div className="status-pill">{STATUS_LABELS[session.status]}</div>
+        </div>
       </header>
 
       <div className="panel">
@@ -500,6 +529,24 @@ export default function StaffApp() {
         </nav>
 
         <div className="panel-body">
+          {session.status === "client_submitted" ? (
+            <div className="section-card invite-card" style={{ marginBottom: "1rem" }}>
+              <h3>Client submitted — ready to print</h3>
+              <p className="step-help">
+                Open the printable Renewal–Endorsement order form (from → to), print or PDF it,
+                then continue to confirmation email if needed. You can still edit fields in the
+                wizard steps.
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => setShowOrderForm(true)}
+              >
+                View / print order form
+              </button>
+            </div>
+          ) : null}
+
           {step === "policy" ? (
             <>
               <StepPolicy session={session} onChange={(s) => void persist(s)} />
@@ -533,7 +580,20 @@ export default function StaffApp() {
             <StepDetails session={session} onChange={(s) => void persist(s)} />
           ) : null}
           {step === "gate" ? <StepGate session={session} /> : null}
-          {step === "summary" ? <StepSummary session={session} /> : null}
+          {step === "summary" ? (
+            <>
+              <StepSummary session={session} />
+              <div className="actions" style={{ marginTop: "1rem" }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowOrderForm(true)}
+                >
+                  Print order form
+                </button>
+              </div>
+            </>
+          ) : null}
           {step === "finish" ? (
             <StepFinish
               session={session}
@@ -562,6 +622,7 @@ export default function StaffApp() {
                   className="btn btn-secondary"
                   onClick={() => {
                     setSession(null);
+                    setShowOrderForm(false);
                     localStorage.removeItem(ACTIVE_KEY);
                   }}
                 >
