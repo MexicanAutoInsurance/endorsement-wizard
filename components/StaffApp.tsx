@@ -13,7 +13,7 @@ import {
   getStaffAccessCode,
   setStaffAccessCode,
 } from "@/lib/api-client";
-import { buildClientInviteEmail } from "@/lib/client-link";
+import { buildClientInviteEmail, clientFillUrl } from "@/lib/client-link";
 import { isGateComplete, isInviteBasicsComplete } from "@/lib/validation";
 import {
   STEP_IDS,
@@ -248,11 +248,7 @@ function InvitePanel({
   };
 
   const email = useMemo(() => {
-    const url =
-      clientUrl ||
-      (typeof window !== "undefined"
-        ? `${window.location.origin}/client/${session.clientToken}`
-        : "");
+    const url = clientUrl || clientFillUrl("", session.clientToken);
     return buildClientInviteEmail(session, url);
   }, [session, clientUrl]);
 
@@ -320,9 +316,7 @@ function InvitePanel({
               type="button"
               className="btn btn-ghost"
               onClick={async () => {
-                const url =
-                  clientUrl ||
-                  `${window.location.origin}/client/${session.clientToken}`;
+                const url = clientUrl || clientFillUrl("", session.clientToken);
                 await navigator.clipboard.writeText(url);
                 onToast("Link copied");
               }}
@@ -334,7 +328,7 @@ function InvitePanel({
       </div>
       {(clientUrl || session.clientLinkSentAt) && basicsOk ? (
         <p className="session-meta" style={{ marginTop: "0.75rem", wordBreak: "break-all" }}>
-          Link: {clientUrl || `${typeof window !== "undefined" ? window.location.origin : ""}/client/${session.clientToken}`}
+          Link: {clientUrl || clientFillUrl("", session.clientToken)}
         </p>
       ) : null}
     </div>

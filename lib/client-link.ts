@@ -1,7 +1,19 @@
 import type { EndorsementSession } from "./types";
 
+/** Always use the public live origin for client magic links (never a Vercel preview). */
+export const PUBLIC_APP_ORIGIN = "https://endorsement-wizard.apps.grok.bot";
+
+export function publicAppOrigin(): string {
+  const fromEnv =
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    process.env.APP_PUBLIC_URL?.trim() ||
+    "";
+  if (fromEnv) return fromEnv.replace(/\/$/, "");
+  return PUBLIC_APP_ORIGIN;
+}
+
 export function clientFillUrl(origin: string, token: string): string {
-  const base = origin.replace(/\/$/, "");
+  const base = (origin || publicAppOrigin()).replace(/\/$/, "");
   return `${base}/client/${encodeURIComponent(token)}`;
 }
 

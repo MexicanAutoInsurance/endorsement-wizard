@@ -1,4 +1,4 @@
-import { clientFillUrl } from "@/lib/client-link";
+import { clientFillUrl, publicAppOrigin } from "@/lib/client-link";
 import { requireStaffAccess } from "@/lib/staff-auth";
 import { getSessionById, saveSession } from "@/lib/sessions";
 import { isInviteBasicsComplete } from "@/lib/validation";
@@ -39,8 +39,9 @@ export async function POST(
         : "awaiting_client",
   });
 
-  const origin = new URL(request.url).origin;
-  const clientUrl = clientFillUrl(origin, session.clientToken);
+  // Always emit the public live URL — request.origin can be a Vercel preview
+  // that asks clients to sign in.
+  const clientUrl = clientFillUrl(publicAppOrigin(), session.clientToken);
 
   return Response.json(
     { session, clientUrl },
